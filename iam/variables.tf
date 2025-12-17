@@ -43,3 +43,11 @@ variable "bitbucket_branch_name" {
   default     = "master"
 }
 
+variable "eventbridge_pipeline_role_name" {
+  description = "Cloud Custodian EventBridge CodePipeline Service Role Name"
+  type        = string
+  default     = "EventBridgeCodePipelineRole"
+}
+
+
+

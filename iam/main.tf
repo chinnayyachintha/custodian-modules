@@ -100,3 +100,36 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
     ]
   })
 }
+
+#----------------------------------------------------------
+# EventBridge (CloudWatch Events) Role for Pipeline Trigger
+#----------------------------------------------------------
+resource "aws_iam_role" "eventbridge_pipeline_role" {
+  name = "cloudcustodian-${var.eventbridge_pipeline_role_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "events.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+#------------------------
+# EventBridge IAM Policy
+#------------------------
+resource "aws_iam_role_policy" "eventbridge_pipeline_policy" {
+  name = "cwe-${var.eventbridge_pipeline_role_name}-policy"
+  role = aws_iam_role.eventbridge_pipeline_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "codepipeline:StartPipelineExecution"
+      Resource = aws_codepipeline.cloudcustodian_pipeline.arn
+    }]
+  })
+}
